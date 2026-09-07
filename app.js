@@ -64,15 +64,48 @@
     if(typeof value!=='string'||!value.trim())return '';
     try{const url=new URL(value,location.href);return ['https:','http:','file:'].includes(url.protocol)?url.href:'';}catch{return '';}
   }
-  const photo=safePhoto(config.photoUrl);
-  if(photo){
-    $('#memory-caption').textContent=config.photoCaption||'รอยยิ้มของเธอ ♡';
-    for(const id of ['#gift-image','#memory-image']){
-      const img=$(id);img.alt=config.photoCaption||'ภาพความทรงจำของเรา';
-      img.addEventListener('error',()=>{img.src='assets/garden.png';img.alt='สวนกระต่ายสีชมพู';$('#photo-status').textContent='ตอนนี้รูปยังเปิดไม่ได้ เลยส่งสวนกระต่ายมาให้กอดแทนนะ ♡';},{once:true});
-      img.src=photo;
-    }
-  }else{$('#gift-title').textContent=config.noPhotoTitle||'สวนเล็ก ๆ นี้ ตั้งใจทำให้เธอ';}
+  const configuredPhotos=Array.isArray(config.photos)?config.photos:[];
+  let photos=configuredPhotos.map(p=>typeof p==='string'?{url:p}:p).filter(p=>p&&safePhoto(p.url)).map(p=>({url:safePhoto(p.url),caption:p.caption||'ความทรงจำเล็ก ๆ ของเรา ♡'}));
+  if(!photos.length&&safePhoto(config.photoUrl))photos=[{url:safePhoto(config.photoUrl),caption:config.photoCaption||'รอยยิ้มของเธอ ♡'}];
+  if(!photos.length){photos=[{url:'assets/garden.png',caption:'สวนเล็ก ๆ ที่ตั้งใจทำให้เธอ ♡'}];$('#gift-title').textContent=config.noPhotoTitle||'สวนเล็ก ๆ นี้ ตั้งใจทำให้เธอ';}
+  const gift=$('#gift-dialog');gift.classList.add('album-dialog');
+  const giftArea=$('.gift-photo');giftArea.replaceChildren();
+  const grid=document.createElement('div');grid.className='album-grid';grid.dataset.count=String(photos.length);grid.setAttribute('aria-label','อัลบั้มความทรงจำ');
+  const viewer=document.createElement('div');viewer.className='album-viewer';viewer.hidden=true;
+  const fullImage=document.createElement('img');fullImage.className='album-full-image';
+  const status=document.createElement('p');status.id='photo-status';status.setAttribute('role','status');
+  const caption=document.createElement('p');caption.className='album-caption';caption.setAttribute('aria-live','polite');
+  const controls=document.createElement('div');controls.className='album-controls';
+  function makeButton(label,aria,action){const b=document.createElement('button');b.type='button';b.className='secondary';b.textContent=label;b.setAttribute('aria-label',aria);b.addEventListener('click',action);return b;}
+  let current=0;
+  const back=makeButton('↗ ดูทั้งอัลบั้ม','กลับไปดูทั้งอัลบั้ม',()=>{viewer.hidden=true;grid.hidden=false;grid.children[current]?.focus();});
+  const previous=makeButton('←','ภาพก่อนหน้า',()=>showPhoto(current-1));
+  const next=makeButton('→','ภาพถัดไป',()=>showPhoto(current+1));
+  const counter=document.createElement('span');counter.className='album-counter';
+  controls.append(previous,counter,next);viewer.append(back,fullImage,caption,status,controls);giftArea.append(grid,viewer);
+  function loadPhoto(img,photo,onError){
+    img.onerror=()=>{img.onerror=null;img.src='assets/garden.png';img.alt='ภาพสำรองสวนกระต่าย';onError?.();};
+    img.alt=photo.caption;img.src=photo.url;
+  }
+  function showPhoto(index){current=(index+photos.length)%photos.length;status.textContent='';grid.hidden=true;viewer.hidden=false;loadPhoto(fullImage,photos[current],()=>{status.textContent='รูปนี้เปิดไม่ได้ในตอนนี้ เลยส่งสวนกระต่ายมาแทนนะ ♡';});caption.textContent=photos[current].caption;counter.textContent=`${current+1} / ${photos.length}`;previous.hidden=next.hidden=photos.length<2;if(!reduceMotion&&fullImage.animate)fullImage.animate([{opacity:0,transform:'translateY(12px) scale(.98)'},{opacity:1,transform:'none'}],{duration:400,easing:'ease-out'});}
+  photos.forEach((photo,index)=>{
+    const tile=document.createElement('button');tile.type='button';tile.className='album-tile';tile.style.setProperty('--order',index);tile.setAttribute('aria-label',`ดูรูปที่ ${index+1}: ${photo.caption}`);
+    const img=document.createElement('img');img.loading='lazy';loadPhoto(img,photo,()=>tile.classList.add('photo-unavailable'));
+    const label=document.createElement('span');label.textContent=photo.caption;
+    const number=document.createElement('small');number.textContent=String(index+1).padStart(2,'0')+' / OUR MOMENTS';
+    tile.append(img,number,label);tile.addEventListener('click',()=>{showPhoto(index);back.focus();});grid.append(tile);
+  });
+  gift.addEventListener('keydown',event=>{if(viewer.hidden)return;if(event.key==='ArrowLeft'||event.key==='ArrowRight'){event.preventDefault();showPhoto(current+(event.key==='ArrowLeft'?-1:1));}});
+  let touchStart=null;
+  fullImage.addEventListener('touchstart',event=>{touchStart=event.touches.length===1?event.touches[0].clientX:null;},{passive:true});
+  fullImage.addEventListener('touchend',event=>{if(touchStart===null)return;const delta=event.changedTouches[0].clientX-touchStart;touchStart=null;if(Math.abs(delta)>55)showPhoto(current+(delta>0?-1:1));},{passive:true});
+  gift.addEventListener('close',()=>{viewer.hidden=true;grid.hidden=false;});
+  const memoryFrame=$('.memory-frame');memoryFrame.classList.add('album-cover');
+  const coverButton=document.createElement('button');coverButton.type='button';coverButton.className='album-cover-button';coverButton.setAttribute('aria-label',`เปิดอัลบั้ม ${photos.length} รูป`);
+  const coverGrid=document.createElement('span');coverGrid.className='album-cover-grid';coverGrid.dataset.count=String(Math.min(photos.length,5));
+  photos.slice(0,5).forEach(photo=>{const img=document.createElement('img');img.loading='lazy';loadPhoto(img,photo);coverGrid.append(img);});
+  const coverCaption=document.createElement('span');coverCaption.className='album-cover-caption';coverCaption.textContent=`${config.albumTitle||'ความทรงจำของเรา'} · ${photos.length} รูป ↗`;
+  coverButton.append(coverGrid,coverCaption);memoryFrame.replaceChildren(coverButton);coverButton.addEventListener('click',()=>openDialog(gift));
   $('#reveal').addEventListener('click',()=>openDialog($('#gift-dialog')));
   $('#show-photo').addEventListener('click',()=>openDialog($('#gift-dialog')));
   $('#read-letter').addEventListener('click',()=>{$('#gift-dialog').close();$('#letter').scrollIntoView({behavior:reduceMotion?'instant':'smooth'});});

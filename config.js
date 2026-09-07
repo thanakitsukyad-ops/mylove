@@ -2,9 +2,21 @@
 window.LOVE_CONFIG = {
   recipient: "คนเก่งของเรา",
   sender: "คนที่อยากดูแลเธอ",
+  // อัลบั้ม: ใส่ลิงก์ใน url ได้ 4–5 รูป หรือเพิ่มรายการได้ตามต้องการ
+  // ระบบจัดวางให้อัตโนมัติ ช่องที่ url ว่างจะไม่แสดง
+  // ถ้าทั้งอัลบั้มว่าง จะใช้ photoUrl เดิมด้านล่าง
+  albumTitle: "ความทรงจำของเรา",
+  photos: [
+    { url: "https://cdn.discordapp.com/attachments/906060810172903445/1546578939156238416/fcd66617-f60d-4b53-9899-1fe14df1676d.jpg?ex=6aa04b61&is=6a9ef9e1&hm=7cbdccd3e21785a6ee82d9aa209ad47c8ada11045690840b1e9f385a638c0c72&", caption: "วันธรรมดาที่พิเศษเพราะมีเธอ ♡" },
+    { url: "https://cdn.discordapp.com/attachments/906060810172903445/1546578953601286277/b6647d1f-0e03-46d3-8df4-a341e3501712.jpg?ex=6aa04b64&is=6a9ef9e4&hm=8319b120e3843bbfe075fd1cb50100c9868a4826c6e6785eb8665e2eb4c18898&", caption: "รอยยิ้มที่เราอยากเห็นทุกวัน" },
+    { url: "https://cdn.discordapp.com/attachments/906060810172903445/1546578967668985876/cba2130d-be8e-4e15-8bc3-84125a6971b3.jpg?ex=6aa04b67&is=6a9ef9e7&hm=09243f50e1bd232cdef2e3b881c9a50399425f728885a3b7e28c1bffe94d4d1d&", caption: "ความทรงจำเล็ก ๆ ที่มีความหมาย" },
+    { url: "https://cdn.discordapp.com/attachments/906060810172903445/1546579041589657600/5f395072-156e-4750-832e-c3157da69c02.jpg?ex=6aa04b79&is=6a9ef9f9&hm=c99597fe44df20c3c5159d8ab5a275428b2b38e1dc6ba6656d4025a58957a885&", caption: "ดีใจนะที่เราได้เจอกัน" },
+    { url: "https://cdn.discordapp.com/attachments/906060810172903445/1546579081355591710/6f6c7f11-9239-4646-bb5b-da0d070471e4.jpg?ex=6aa04b83&is=6a9efa03&hm=badb6f663c091f961c4968aceb2ed50bb424abfcbb79b5b0388d6c3afd7ce104&", caption: "อยากมีเรื่องราวกับเธออีกเยอะเลย ♡" },
+    { url: "https://cdn.discordapp.com/attachments/906060810172903445/1546579112116617256/f7b0b337-aa0e-43d6-bec4-9e38012bc951.jpg?ex=6aa04b8a&is=6a9efa0a&hm=858d304bb0de2c58f9b2c509f9e63e75e5e5ca7eb8bf0bd02a2f8b42b86b215c&", caption: "อยากมีเรื่องราวกับเธออีกเยอะเลย ♡" }
+  ],
   // วางลิงก์รูปโดยตรงจาก Discord (Copy Link ของรูป ไม่ใช่ลิงก์ข้อความ)
   // หรือใช้รูปในเครื่อง เช่น "assets/our-photo.jpg"
-  photoUrl: "",
+  photoUrl: "https://cdn.discordapp.com/attachments/906060810172903445/1546578939156238416/fcd66617-f60d-4b53-9899-1fe14df1676d.jpg?ex=6aa04b61&is=6a9ef9e1&hm=7cbdccd3e21785a6ee82d9aa209ad47c8ada11045690840b1e9f385a638c0c72&",
   photoCaption: "รอยยิ้มของเธอ เป็นเรื่องโปรดของเรา ♡",
   pageTitle: "สวนเล็ก ๆ ของเรา · A little place for you",
   noPhotoTitle: "สวนเล็ก ๆ นี้ ตั้งใจทำให้เธอ",
