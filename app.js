@@ -109,6 +109,16 @@
   $('#reveal').addEventListener('click',()=>openDialog($('#gift-dialog')));
   $('#show-photo').addEventListener('click',()=>openDialog($('#gift-dialog')));
   $('#read-letter').addEventListener('click',()=>{$('#gift-dialog').close();$('#letter').scrollIntoView({behavior:reduceMotion?'instant':'smooth'});});
+  const instagramSection=document.createElement('section');instagramSection.className='instagram-invitation';
+  const instagramMessage=document.createElement('p');instagramMessage.textContent=config.instagramMessage||'งั้นเธอใช้ไอจีแอคหลักมาฟอลเราได้ไหม\nถ้าเธอสะดวกนะ ♡';
+  instagramSection.append(instagramMessage);
+  try{
+    const instagramUrl=new URL(config.instagramUrl);
+    if(instagramUrl.protocol==='https:'&&['instagram.com','www.instagram.com'].includes(instagramUrl.hostname)&&instagramUrl.pathname!=='/'&&!instagramUrl.username&&!instagramUrl.password){
+      const instagramLink=document.createElement('a');instagramLink.className='primary instagram-link';instagramLink.href=instagramUrl.href;instagramLink.target='_blank';instagramLink.rel='noopener noreferrer';instagramLink.textContent=config.instagramButtonText||'มาฟอลไอจีเรานะ ↗';instagramSection.append(instagramLink);
+    }
+  }catch{ /* Show the invitation without a link until an Instagram URL is configured. */ }
+  $('#back-garden').before(instagramSection);
   $('#yes').addEventListener('click',()=>{openDialog($('#yes-dialog'));burst(140);});
   $('#back-garden').addEventListener('click',()=>$('#yes-dialog').close());
   $('#later').addEventListener('click',()=>{$('#answer-feedback').textContent=config.notReadyMessage||'ได้เลยนะ ไม่ต้องรีบตอบ ดูแลหัวใจตัวเองก่อน เราเคารพการตัดสินใจของเธอเสมอ ♡';});
