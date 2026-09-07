@@ -4,7 +4,7 @@ window.LOVE_CONFIG = {
   // ถ้าเว้นว่างจะใช้ assets/garden.png
   bunnyImageUrl: "https://cdn.discordapp.com/attachments/906060810172903445/1546603305885761636/garden.png?ex=6aa06212&is=6a9f1092&hm=1f1c7cbfd466f9c669e3ddb27f24a514b1c5c74937b883b5ffe7f098ad2af88f&",
   // ใส่ไฟล์อัดเสียงของคุณใน assets แล้วระบุชื่อที่นี่ เช่น assets/my-voice.mp3
-  voiceUrl: "https://www.youtube.com/watch?v=N9bashij_7c",
+  voiceUrl: "https://file.kiwi/efc646ec#WGsmiUVUSoyysNjYqqSwsQ",
   voiceTitle: "มีบางอย่าง… อยากบอกด้วยเสียงของเรา",
   voiceDescription: "กดฟังตอนที่เธอพร้อมนะ ♡",
   voiceEmptyMessage: "ขอติดข้อความเสียงไว้ก่อนนะ ระหว่างนี้รับจดหมายจากเราไปก่อน ♡",
