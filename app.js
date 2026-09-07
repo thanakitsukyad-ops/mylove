@@ -16,6 +16,7 @@
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   let audio, master, melodyTimer, musicOn = false;
   let musicWanted = config.autoPlayMusic !== false;
+  let voicePlaying = false;
   const activeNotes = new Set();
   const introSound = document.createElement('button');
   introSound.type='button';introSound.className='intro-sound';
@@ -52,11 +53,11 @@
     updateSoundUI();
   }
   function beginWhenReady(){
-    if(!musicWanted||document.hidden||audio?.state!=='running'||musicOn)return;
+    if(!musicWanted||voicePlaying||document.hidden||audio?.state!=='running'||musicOn)return;
     musicOn=true;master.gain.setTargetAtTime(.22,audio.currentTime,.3);playMelody();updateSoundUI();
   }
   function startMusic(){
-    if(!musicWanted||document.hidden)return;
+    if(!musicWanted||voicePlaying||document.hidden)return;
     try{
       if(!audio){
         const AudioCtor=window.AudioContext||window.webkitAudioContext;
@@ -73,6 +74,7 @@
   introSound.addEventListener('click',()=>{musicWanted=!musicWanted;if(musicWanted)startMusic();else stopMelody();updateSoundUI();});
   document.addEventListener('visibilitychange',()=>{if(document.hidden){stopMelody();audio?.suspend().catch(()=>{});}else if(musicWanted)startMusic();});
   updateSoundUI();startMusic();
+  document.addEventListener('love-voice',event=>{voicePlaying=Boolean(event.detail?.playing);if(voicePlaying)stopMelody();else if(musicWanted)startMusic();});
   const canvas=$('#particles'),ctx=canvas.getContext('2d');
   let dots=[],raf=0,w=innerWidth,h=innerHeight,last=0;
   function resize(){w=innerWidth;h=innerHeight;const dpr=Math.min(devicePixelRatio||1,2);canvas.width=w*dpr;canvas.height=h*dpr;ctx?.setTransform(dpr,0,0,dpr,0,0);}
@@ -150,7 +152,7 @@
     }
   }catch{ /* Show the invitation without a link until an Instagram URL is configured. */ }
   $('#back-garden').before(instagramSection);
-  $('#yes').addEventListener('click',()=>{openDialog($('#yes-dialog'));burst(140);});
+  $('#yes').addEventListener('click',()=>{const celebrate=()=>{openDialog($('#yes-dialog'));burst(140);};if(window.LoveExtras)window.LoveExtras.startFinale(celebrate);else celebrate();});
   $('#back-garden').addEventListener('click',()=>$('#yes-dialog').close());
   $('#later').addEventListener('click',()=>{$('#answer-feedback').textContent=config.notReadyMessage||'ได้เลยนะ ไม่ต้องรีบตอบ ดูแลหัวใจตัวเองก่อน เราเคารพการตัดสินใจของเธอเสมอ ♡';});
   if('IntersectionObserver' in window&&!reduceMotion){const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('visible');observer.unobserve(entry.target);}}),{threshold:.08});document.querySelectorAll('.section').forEach(el=>{el.classList.add('reveal-section');observer.observe(el);});}
