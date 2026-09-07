@@ -2,6 +2,18 @@
   'use strict';
   const $ = s => document.querySelector(s);
   const config = window.LOVE_CONFIG || {};
+  const bunnyImage=document.querySelector('.hero-bunny-image');
+  if(bunnyImage){
+    let bunnySource='assets/garden.png';
+    try{
+      if(typeof config.bunnyImageUrl==='string'&&config.bunnyImageUrl.trim()){
+        const url=new URL(config.bunnyImageUrl.trim(),location.href);
+        if(['https:','http:','file:'].includes(url.protocol))bunnySource=url.href;
+      }
+    }catch{ /* Keep the bundled image when the optional URL is invalid. */ }
+    bunnyImage.onerror=()=>{bunnyImage.onerror=null;if(bunnySource!=='assets/garden.png')bunnyImage.src='assets/garden.png';};
+    bunnyImage.src=bunnySource;
+  }
   document.querySelectorAll('[data-recipient]').forEach(e => e.textContent = config.recipient || 'คนเก่งของเรา');
   document.querySelectorAll('[data-sender]').forEach(e => e.textContent = config.sender || 'คนที่อยากดูแลเธอ');
   for (const [selector, content] of Object.entries(config.texts || {})) {
