@@ -15,6 +15,11 @@
   }
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   let audio, master, melodyTimer, musicOn = false;
+  let musicWanted = config.autoPlayMusic !== false;
+  const activeNotes = new Set();
+  const introSound = document.createElement('button');
+  introSound.type='button';introSound.className='intro-sound';
+  $('#intro').append(introSound);
   const notes = [523.25,659.25,783.99,659.25,587.33,659.25,523.25,440,523.25,659.25,880,783.99,659.25,587.33,523.25,0];
   function playMelody() {
     if (!musicOn || !audio) return;
@@ -26,22 +31,48 @@
       volume.gain.setValueAtTime(0,now+i*.55);
       volume.gain.linearRampToValueAtTime(.12,now+i*.55+.025);
       volume.gain.exponentialRampToValueAtTime(.001,now+i*.55+1.7);
-      osc.connect(volume); volume.connect(master); osc.start(now+i*.55); osc.stop(now+i*.55+1.8);
+      osc.connect(volume); volume.connect(master);activeNotes.add(osc);
+      osc.onended=()=>{activeNotes.delete(osc);osc.disconnect();volume.disconnect();};
+      osc.start(now+i*.55); osc.stop(now+i*.55+1.8);
     });
     melodyTimer=setTimeout(playMelody,notes.length*550);
   }
-  $('#sound').addEventListener('click',async () => {
-    try {
-      if(!audio){audio=new (window.AudioContext || window.webkitAudioContext)();master=audio.createGain();master.connect(audio.destination);master.gain.value=0;}
-      await audio.resume(); musicOn=!musicOn;
-      master.gain.setTargetAtTime(musicOn?.22:0,audio.currentTime,.15);
-      clearTimeout(melodyTimer);if(musicOn)playMelody();
-      $('#sound').setAttribute('aria-pressed',String(musicOn));
-      $('#sound').setAttribute('aria-label',musicOn?'ปิดเสียงดนตรี':'เปิดเสียงดนตรี');
-      $('#sound span').textContent=musicOn?'ปิดเสียง':'เปิดเสียง';
-    } catch { $('#sound span').textContent='เสียงไม่พร้อม'; }
-  });
-  document.addEventListener('visibilitychange',()=>{if(audio){if(document.hidden)audio.suspend();else if(musicOn)audio.resume().catch(()=>{});}});
+  function updateSoundUI(){
+    $('#sound').setAttribute('aria-pressed',String(musicOn));
+    $('#sound').setAttribute('aria-label',musicOn?'ปิดเสียงดนตรี':'เปิดเสียงดนตรี');
+    $('#sound span').textContent=musicOn?'ปิดเสียง':'เปิดเสียง';
+    introSound.textContent=musicWanted?(musicOn?'♫ ปิดเพลง':'♫ แตะเปิดประตูแล้วเพลงจะเริ่ม · ปิดเพลงได้ที่นี่'):'♫ เปิดเพลง';
+    introSound.setAttribute('aria-pressed',String(musicWanted));
+  }
+  function stopMelody(){
+    clearTimeout(melodyTimer);musicOn=false;
+    for(const osc of activeNotes){try{osc.stop();}catch{}}
+    activeNotes.clear();
+    if(master)master.gain.setTargetAtTime(0,audio.currentTime,.08);
+    updateSoundUI();
+  }
+  function beginWhenReady(){
+    if(!musicWanted||document.hidden||audio?.state!=='running'||musicOn)return;
+    musicOn=true;master.gain.setTargetAtTime(.22,audio.currentTime,.3);playMelody();updateSoundUI();
+  }
+  function startMusic(){
+    if(!musicWanted||document.hidden)return;
+    try{
+      if(!audio){
+        const AudioCtor=window.AudioContext||window.webkitAudioContext;
+        if(!AudioCtor)return;
+        audio=new AudioCtor();master=audio.createGain();master.connect(audio.destination);master.gain.value=0;
+        audio.addEventListener('statechange',()=>{if(audio.state==='running')beginWhenReady();else stopMelody();});
+      }
+      // Called again directly inside the opening click if autoplay is suspended.
+      if(audio.state!=='running')audio.resume().then(beginWhenReady).catch(()=>updateSoundUI());
+      else beginWhenReady();
+    }catch{updateSoundUI();}
+  }
+  $('#sound').addEventListener('click',()=>{musicWanted=!musicOn;if(musicWanted)startMusic();else stopMelody();updateSoundUI();});
+  introSound.addEventListener('click',()=>{musicWanted=!musicWanted;if(musicWanted)startMusic();else stopMelody();updateSoundUI();});
+  document.addEventListener('visibilitychange',()=>{if(document.hidden){stopMelody();audio?.suspend().catch(()=>{});}else if(musicWanted)startMusic();});
+  updateSoundUI();startMusic();
   const canvas=$('#particles'),ctx=canvas.getContext('2d');
   let dots=[],raf=0,w=innerWidth,h=innerHeight,last=0;
   function resize(){w=innerWidth;h=innerHeight;const dpr=Math.min(devicePixelRatio||1,2);canvas.width=w*dpr;canvas.height=h*dpr;ctx?.setTransform(dpr,0,0,dpr,0,0);}
@@ -52,7 +83,7 @@
     dots=dots.slice(-220);if(!raf){last=performance.now();raf=requestAnimationFrame(frame);}
   }
   function frame(time){const dt=Math.min((time-last)/16.67,2);last=time;ctx.clearRect(0,0,w,h);dots=dots.filter(p=>p.life>0&&p.y<h+50);for(const p of dots){p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=.045*dt;p.life-=dt;p.angle+=.025*dt;ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.angle);ctx.globalAlpha=Math.min(1,p.life/35);ctx.fillStyle=p.color;ctx.font=`${p.size}px Georgia`;ctx.fillText('♥',0,0);ctx.restore();}raf=dots.length?requestAnimationFrame(frame):0;}
-  $('#enter').addEventListener('click',()=>{$('#intro').classList.add('gone');$('#intro').inert=true;burst(85);$('#reveal').focus({preventScroll:true});});
+  $('#enter').addEventListener('click',()=>{startMusic();$('#intro').classList.add('gone');$('#intro').inert=true;burst(85);$('#reveal').focus({preventScroll:true});});
   let returnFocus;
   function openDialog(dialog){returnFocus=document.activeElement;dialog.showModal();burst();}
   document.querySelectorAll('dialog').forEach(dialog=>{

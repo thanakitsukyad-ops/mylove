@@ -1,5 +1,7 @@
 // เปลี่ยนข้อมูลตรงนี้ แล้วบันทึกเป็น UTF-8
 window.LOVE_CONFIG = {
+  // ลองเริ่มเพลงเมื่อเปิดเว็บ ถ้ามือถือบล็อกเสียง จะเริ่มเมื่อแตะเปิดประตู
+  autoPlayMusic: true,
   // ใส่ลิงก์ไอจีของคุณ เช่น https://www.instagram.com/your_username/
   // เว้นว่างได้: แสดงข้อความขอฟอล แต่ซ่อนปุ่มจนกว่าจะใส่ลิงก์
   instagramUrl: "",
@@ -17,7 +19,9 @@ window.LOVE_CONFIG = {
     { url: "https://cdn.discordapp.com/attachments/906060810172903445/1546578967668985876/cba2130d-be8e-4e15-8bc3-84125a6971b3.jpg?ex=6aa04b67&is=6a9ef9e7&hm=09243f50e1bd232cdef2e3b881c9a50399425f728885a3b7e28c1bffe94d4d1d&", caption: "ความทรงจำเล็ก ๆ ที่มีความหมาย" },
     { url: "https://cdn.discordapp.com/attachments/906060810172903445/1546579041589657600/5f395072-156e-4750-832e-c3157da69c02.jpg?ex=6aa04b79&is=6a9ef9f9&hm=c99597fe44df20c3c5159d8ab5a275428b2b38e1dc6ba6656d4025a58957a885&", caption: "ดีใจนะที่เราได้เจอกัน" },
     { url: "https://cdn.discordapp.com/attachments/906060810172903445/1546579081355591710/6f6c7f11-9239-4646-bb5b-da0d070471e4.jpg?ex=6aa04b83&is=6a9efa03&hm=badb6f663c091f961c4968aceb2ed50bb424abfcbb79b5b0388d6c3afd7ce104&", caption: "อยากมีเรื่องราวกับเธออีกเยอะเลย ♡" },
-    { url: "https://cdn.discordapp.com/attachments/906060810172903445/1546579112116617256/f7b0b337-aa0e-43d6-bec4-9e38012bc951.jpg?ex=6aa04b8a&is=6a9efa0a&hm=858d304bb0de2c58f9b2c509f9e63e75e5e5ca7eb8bf0bd02a2f8b42b86b215c&", caption: "อยากมีเรื่องราวกับเธออีกเยอะเลย ♡" }
+    { url: "https://cdn.discordapp.com/attachments/906060810172903445/1546579112116617256/f7b0b337-aa0e-43d6-bec4-9e38012bc951.jpg?ex=6aa04b8a&is=6a9efa0a&hm=858d304bb0de2c58f9b2c509f9e63e75e5e5ca7eb8bf0bd02a2f8b42b86b215c&", caption: "อยากมีเรื่องราวกับเธออีกเยอะเลย ♡" },
+    { url: "https://cdn.discordapp.com/attachments/906060810172903445/1546586990651113573/90aa16e9-26fd-4fb0-a1f8-41bcadee6863.jpg?ex=6aa052e0&is=6a9f0160&hm=54fde0decf44fdbb19e3e7151aeb4632bc50691d6c8701ef2ac918ce126e5648&", caption: "อยากมีเรื่องราวกับเธออีกเยอะเลย ♡" },
+    { url: "https://cdn.discordapp.com/attachments/906060810172903445/1546592176987971644/968c96ba-c20e-4203-a8f2-6e51aae53003.jpg?ex=6aa057b5&is=6a9f0635&hm=44b5a291b4d3a1db5a7a66af776f340fc1424cf98996d2440f5776057cbc4b39&", caption: "อยากมีเรื่องราวกับเธออีกเยอะเลย ♡" }
   ],
   // วางลิงก์รูปโดยตรงจาก Discord (Copy Link ของรูป ไม่ใช่ลิงก์ข้อความ)
   // หรือใช้รูปในเครื่อง เช่น "assets/our-photo.jpg"
@@ -36,7 +40,7 @@ window.LOVE_CONFIG = {
     ".nav-note": "มีจดหมายถึงเธอ ↗",
     ".pill": "●  A SAFE LITTLE PLACE FOR YOUR HEART",
     "h1": "โลกอาจใจร้าย\nแต่ตรงนี้…\nมีรักให้เธอนะ",
-    ".hero-description": "ไม่ต้องเก่งทุกวัน ไม่ต้องยิ้มตลอดเวลาก็ได้\nในสวนเล็ก ๆ แห่งนี้ เธอเป็นตัวเองได้เสมอ",
+    ".hero-description": "เค้าอยากมีเธออยู่ในชีวิตประจำวันทุกเช้าเลยนะรู้ไหม\nอยากพาเบบี๋ไปกินของอร่อยๆในทุกๆวันเลย",
     "#reveal": "มีบางอย่างอยากให้เธอเห็น ♡",
     ".tiny-note": "ทำขึ้นด้วยความตั้งใจ ให้เธอคนเดียว",
     ".floating-note small": "เธอคู่ควรกับความรักที่อ่อนโยน",
